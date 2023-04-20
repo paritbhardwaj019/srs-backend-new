@@ -7,10 +7,15 @@ import {
   getWorkoutPlan,
   updateWorkoutPlan,
   deleteWorkoutPlan,
+  updateWorkoutPlanCompletion,
 } from '../controllers/workoutPlan.controller.js';
 
 const router = express.Router();
 router.use(authController.protect);
+//login Users
+router.patch("/:workoutPlanId/completed", updateWorkoutPlanCompletion);
+
+//trainer and admins only
 router.use(authController.restrictTo('admin', 'trainer'));
 
 

@@ -26,6 +26,34 @@ export const createWorkoutPlanWithStartDate = catchAsync(async (req, res, next) 
       },
     });
   });
+
+  // workoutPlan.controller.js
+
+export const updateWorkoutPlanCompletion = catchAsync(async (req, res, next) => {
+    const workoutPlanId = req.params.workoutPlanId;
+    const completed = req.body.completed;
+  
+    const workoutPlan = await WorkoutPlan.findByIdAndUpdate(
+      workoutPlanId,
+      { completed },
+      {
+        new: true,
+        runValidators: true,
+      }
+    );
+  
+    if (!workoutPlan) {
+      return next(new AppError("No workout plan found with that ID", 404));
+    }
+  
+    res.status(200).json({
+      status: "success",
+      data: {
+        workoutPlan,
+      },
+    });
+  });
+  
   
   
   

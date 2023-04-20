@@ -23,6 +23,8 @@ router
   )
   .delete(userController.getMe, userController.deleteUser);
 
+  router.route('/user-workout-plans').get(userController.getUserWorkoutPlans);
+
 
 
 // ////////////////////////////////////// ADMIN ONLY ROUTES //////////////////////////////////////

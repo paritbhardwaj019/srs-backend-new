@@ -4,11 +4,14 @@ import multerUpload from '../config/multer.js';
 import catchAsync from '../lib/catchAsync.js';
 import storeToCloudinary from '../lib/storeToCloudinary.js';
 import AppError from '../utils/appError.js';
+import WorkoutPlan from '../models/workout_plan.model.js';
 
 export const getAllUsers = handlerFactory.getAll(User);
 export const getUser = handlerFactory.getOne(User);
 export const updateUser = handlerFactory.updateOne(User);
 export const deleteUser = handlerFactory.deleteOne(User);
+
+export const getUserWorkoutPlans = handlerFactory.getAll(WorkoutPlan)
 
 export const getMe = (req, res, next) => {
   req.params.id = req.user.id;

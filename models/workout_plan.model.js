@@ -8,6 +8,10 @@ const exerciseSchema = new mongoose.Schema({
     photo: String, // Add this field to store the photo URL
     video: String, // Add this field to store the video URL
     notes: String,
+    completed: {
+      type: Boolean,
+      default: false,
+    },
   });
   
 
@@ -29,6 +33,7 @@ const workoutPlanSchema = new mongoose.Schema(
       min: 1,
     },
     exercises: [exerciseSchema],
+   
   },
   {
     toJSON: { virtuals: true },

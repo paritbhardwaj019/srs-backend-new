@@ -1,6 +1,6 @@
 // Import the Package model
 import catchAsync from '../lib/catchAsync.js';
-import Package from '../models/Package.model.js';
+import Package from '../models/package.model.js'
 import * as handlerFactory from '../utils/handlerFactory.js';
 
 
