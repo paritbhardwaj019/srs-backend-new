@@ -5,12 +5,22 @@ import * as userController from '../controllers/user.controller.js';
 
 
 const router = express.Router();
+router.get('/check-token-expiration', authController.checkTokenExpiration);
 
 router.post('/signup', authController.signUp);
 router.post('/login', authController.login);
 
+
+
 // ////////////////////////////////////// ROUTES FOR LOGGED IN USERS ONLY //////////////////////////////////////
 router.use(authController.protect);
+
+// user.routes.js
+
+router
+  .route('/:userId/current-workout-week-day')
+  .get(userController.getCurrentWorkoutWeekAndDay);
+
 
 router
   .route('/me')

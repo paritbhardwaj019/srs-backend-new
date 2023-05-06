@@ -11,6 +11,42 @@ export const getUser = handlerFactory.getOne(User);
 export const updateUser = handlerFactory.updateOne(User);
 export const deleteUser = handlerFactory.deleteOne(User);
 
+// user.controller.js
+
+export const getCurrentWorkoutWeekAndDay = catchAsync(async (req, res, next) => {
+  const userId = req.params.userId;
+  const user = await User.findById(userId);
+  if (!user) {
+    throw new AppError('User not found', 404);
+  }
+
+  const startDate = user.startDate;
+  const { week, day } = getWorkoutWeekAndDay(startDate);
+
+  res.status(200).json({
+    status: 'success',
+    data: {
+      week,
+      day,
+    },
+  });
+});
+
+// user.controller.js
+
+export const getWorkoutWeekAndDay = (startDate) => {
+  const currentDate = new Date();
+  const diffInMilliseconds = currentDate - new Date(startDate);
+  const diffInDays = Math.floor(diffInMilliseconds / (1000 * 60 * 60 * 24));
+
+  const totalDays = diffInDays + 1;
+  const week = Math.ceil(totalDays / 7);
+  const day = totalDays % 7 === 0 ? 7 : totalDays % 7;
+
+  return { week, day };
+};
+
+
 export const getUserWorkoutPlans = handlerFactory.getAll(WorkoutPlan)
 
 export const getMe = (req, res, next) => {

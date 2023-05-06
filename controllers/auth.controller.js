@@ -9,6 +9,61 @@ import AppError from '../utils/appError.js';
 import dotenv from 'dotenv';
 dotenv.config();
 
+ // controllers/authController.js
+
+
+ export const checkTokenExpiration = async (req, res, next) => {
+  const authHeader = req.headers.authorization;
+
+  if (!authHeader || !authHeader.startsWith('Bearer ')) {
+    return res.status(400).json({
+      status: 'fail',
+      message: 'No token provided or token format is incorrect'
+    });
+  }
+
+  const token = authHeader.split(' ')[1];
+
+  let user;
+
+  try {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+
+    // Find user based on decoded payload
+    user = await User.findById(decoded.id);
+    if (!user) {
+      return res.status(401).json({
+        status: 'fail',
+        message: 'The user belonging to this token no longer exists'
+      });
+    }
+
+    res.status(200).json({
+      status: 'success',
+      message: 'Token is still valid',
+      data: {
+        role: user.role
+      }
+    });
+
+  } catch (err) {
+    if (err.name === 'TokenExpiredError') {
+      return res.status(401).json({
+        status: 'fail',
+        message: 'Token expired'
+      });
+    } else {
+      return res.status(401).json({
+        status: 'fail',
+        message: 'Invalid token'
+      });
+    }
+  }
+};
+
+
+
+
 
 export const signUp = catchAsync(async (req, res, next) => {
   delete req.body.role;
@@ -62,3 +117,6 @@ export const restrictTo =
         ? null
         : new AppError('You are not allowed to access this route', 403)
     );
+
+
+   

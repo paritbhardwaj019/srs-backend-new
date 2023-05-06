@@ -1,25 +1,27 @@
 import express from 'express';
-import bodyParser  from 'body-parser';
-
+import bodyParser from 'body-parser';
 import morgan from 'morgan';
 import cors from 'cors';
 import rateLimit from 'express-rate-limit';
 import mongoSanitize from 'express-mongo-sanitize';
 import xss from 'xss-clean';
 import compression from 'compression';
-
+import http from 'http';
+import { Server } from 'socket.io';
 
 import userRouter from './routes/user.routes.js';
 import packagesRouter from './routes/packages.routes.js';
 import workoutPlanRouter from './routes/workoutPlan.routes.js';
-
+import trainerPackageRouter from './routes/trainerPackage.route.js';
+import trainerRequestRouter from './routes/trainerRequest.routes.js';
 
 import AppError from './utils/appError.js';
 import globalErrorHandler from './controllers/error.controller.js';
 
-
 // Create main app
 const app = express();
+const userSocketMap = new Map();
+
 
 // Configure CORS
 app.use(cors({ origin: /^/, credentials: true }));
@@ -49,37 +51,71 @@ app.use(xss());
 // Compress responses
 app.use(compression());
 
-
-
-
 // Middleware to parse JSON data
 app.use(bodyParser.json());
 
-// Connect to MongoDB using Mongoose
-
-
 // Define routes
-//app.use('/api', require('./routes/api'));
 app
   .use('/api/users', userRouter)
-  .use('/api/admin',packagesRouter)
-  app.use('/api/trainer/workoutPlans', workoutPlanRouter);
-;
+  .use('/api/admin', packagesRouter)
+  .use('/api/trainer/workoutPlans', workoutPlanRouter)
+  .use('/api/trainer-packages', trainerPackageRouter)
+  .use('/api/trainer-requests', trainerRequestRouter);
 
-  // Create 404 error
+// Create 404 error
 app.all('*', (req, res, next) =>
-next(
-  new AppError(
-    `The requested resource ${req.originalUrl} was not found at this server`,
-    404
+  next(
+    new AppError(
+      `The requested resource ${req.originalUrl} was not found at this server`,
+      404
+    )
   )
-)
 );
 
 app.use(globalErrorHandler);
 
+// Set up Socket.IO server
+const server = http.createServer(app);
+const io = new Server(server, {
+  cors: {
+    origin: '*', // Set to your client's domain
+    methods: ['GET', 'POST'],
+  },
+});
 
-// Start the server
+io.on('connection', (socket) => {
+  console.log('User connected:', socket.id);
+
+  // Add this line
+  console.log('A user connected to the WebSocket server.');
+
+  socket.on('registerUser', (userId) => {
+    userSocketMap.set(userId, socket.id);
+    console.log(`User ${userId} registered with socket ID ${socket.id}`);
+  });
+
+  socket.on('disconnect', () => {
+    console.log('User disconnected:', socket.id);
+    // Remove the user from the userSocketMap when they disconnect
+    for (const [userId, savedSocketId] of userSocketMap.entries()) {
+      if (savedSocketId === socket.id) {
+        userSocketMap.delete(userId);
+        break;
+      }
+    }
+  });
 
 
-export default app;
+
+  socket.on('error', (error) => {
+    console.log('Error on socket:', socket.id, 'Error:', error);
+  });
+});
+
+
+
+// Store the io object in the Express app
+app.set('io', io);
+
+// Export the server for use in server.js
+export default server;
