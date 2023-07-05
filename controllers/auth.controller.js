@@ -60,7 +60,9 @@ export const checkTokenExpiration = async (req, res, next) => {
 };
 
 export const signUp = catchAsync(async (req, res, next) => {
-  delete req.body.role;
+  if (req.body.role === "admin") {
+    delete req.body.role;
+  }
   const user = await User.create(req.body);
   signAndSendToken(user, 201, res);
 });

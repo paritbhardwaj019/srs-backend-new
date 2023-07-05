@@ -6,12 +6,14 @@ export default class AdvancedAPI {
 
   filter() {
     const queryObj = { ...this.queryString };
-    ['page', 'limit', 'sort', 'fields'].forEach(prop => delete queryObj[prop]);
+    ["page", "limit", "sort", "fields"].forEach(
+      (prop) => delete queryObj[prop]
+    );
 
     let queryObjStrEquivalent = JSON.stringify(queryObj);
     queryObjStrEquivalent = queryObjStrEquivalent.replace(
       /\b(gt|gte|lt|lte)\b/g,
-      match => `$${match}`
+      (match) => `$${match}`
     );
 
     this.mongooseQuery = this.mongooseQuery.find(
@@ -23,9 +25,9 @@ export default class AdvancedAPI {
   sort() {
     if (this.queryString.sort)
       this.mongooseQuery = this.mongooseQuery.sort(
-        this.queryString.sort.replaceAll(',', ' ')
+        this.queryString.sort.replaceAll(",", " ")
       );
-    else this.mongooseQuery = this.mongooseQuery.sort('price');
+    else this.mongooseQuery = this.mongooseQuery.sort("price");
 
     return this;
   }
@@ -33,9 +35,9 @@ export default class AdvancedAPI {
   project() {
     if (this.queryString.fields)
       this.mongooseQuery = this.mongooseQuery.select(
-        this.queryString.fields.replaceAll(',', ' ')
+        this.queryString.fields.replaceAll(",", " ")
       );
-    else this.mongooseQuery = this.mongooseQuery.select('-__v');
+    else this.mongooseQuery = this.mongooseQuery.select("-__v");
 
     return this;
   }

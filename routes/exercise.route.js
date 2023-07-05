@@ -9,7 +9,9 @@ router.use(authController.restrictTo("admin", "trainer"));
 
 router.post("/", exerciseController.createExercise);
 router.get("/", exerciseController.getAllExercises);
+router.get("/:id", exerciseController.getExerciseById);
 router.get("/:packageID", exerciseController.getExercisesByPackageID);
+router.delete("/:id", exerciseController.deleteExercise);
 
 // Export the router
 export default router;

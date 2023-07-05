@@ -1,36 +1,53 @@
-import * as handlerFactory from '../utils/handlerFactory.js';
-import User from '../models/user.model.js';
-import multerUpload from '../config/multer.js';
-import catchAsync from '../lib/catchAsync.js';
-import storeToCloudinary from '../lib/storeToCloudinary.js';
-import AppError from '../utils/appError.js';
-import WorkoutPlan from '../models/workout_plan.model.js';
+import * as handlerFactory from "../utils/handlerFactory.js";
+import User from "../models/user.model.js";
+import multerUpload from "../config/multer.js";
+import catchAsync from "../lib/catchAsync.js";
+import storeToCloudinary from "../lib/storeToCloudinary.js";
+import AppError from "../utils/appError.js";
+import WorkoutPlan from "../models/workout_plan.model.js";
 
-export const getAllUsers = handlerFactory.getAll(User);
+export const getAllUsers = catchAsync(async (req, res, next) => {
+  try {
+    const users = await User.find().populate("package");
+
+    res.status(200).json({
+      status: "success",
+      data: {
+        users,
+      },
+    });
+  } catch (error) {
+    console.log(err);
+
+    next(new AppError("Unable to Get All users"));
+  }
+});
 export const getUser = handlerFactory.getOne(User);
 export const updateUser = handlerFactory.updateOne(User);
 export const deleteUser = handlerFactory.deleteOne(User);
 
 // user.controller.js
 
-export const getCurrentWorkoutWeekAndDay = catchAsync(async (req, res, next) => {
-  const userId = req.params.userId;
-  const user = await User.findById(userId);
-  if (!user) {
-    throw new AppError('User not found', 404);
+export const getCurrentWorkoutWeekAndDay = catchAsync(
+  async (req, res, next) => {
+    const userId = req.params.userId;
+    const user = await User.findById(userId);
+    if (!user) {
+      throw new AppError("User not found", 404);
+    }
+
+    const startDate = user.startDate;
+    const { week, day } = getWorkoutWeekAndDay(startDate);
+
+    res.status(200).json({
+      status: "success",
+      data: {
+        week,
+        day,
+      },
+    });
   }
-
-  const startDate = user.startDate;
-  const { week, day } = getWorkoutWeekAndDay(startDate);
-
-  res.status(200).json({
-    status: 'success',
-    data: {
-      week,
-      day,
-    },
-  });
-});
+);
 
 // user.controller.js
 
@@ -46,15 +63,14 @@ export const getWorkoutWeekAndDay = (startDate) => {
   return { week, day };
 };
 
-
-export const getUserWorkoutPlans = handlerFactory.getAll(WorkoutPlan)
+export const getUserWorkoutPlans = handlerFactory.getAll(WorkoutPlan);
 
 export const getMe = (req, res, next) => {
   req.params.id = req.user.id;
   next();
 };
 
-export const uploadUserPhoto = multerUpload.single('photo');
+export const uploadUserPhoto = multerUpload.single("photo");
 
 export const uploadToCloudinary = catchAsync(async (req, res, next) => {
   // Reset any incoming field related to image
@@ -67,7 +83,7 @@ export const uploadToCloudinary = catchAsync(async (req, res, next) => {
   try {
     const result = await storeToCloudinary(
       req.file.buffer,
-      'users',
+      "users",
       `user-${req.user.id}`
     );
 
@@ -80,6 +96,6 @@ export const uploadToCloudinary = catchAsync(async (req, res, next) => {
     console.log(err);
 
     // Send error down to error.controller
-    next(new AppError('Could not upload your image'));
+    next(new AppError("Could not upload your image"));
   }
 });
