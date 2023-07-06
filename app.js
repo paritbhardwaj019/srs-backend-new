@@ -14,6 +14,8 @@ import packagesRouter from "./routes/packages.routes.js";
 import workoutPlanRouter from "./routes/workoutPlan.routes.js";
 import trainerPackageRouter from "./routes/trainerPackage.route.js";
 import trainerRequestRouter from "./routes/trainerRequest.routes.js";
+import chatRouter from "./routes/chat.routes.js";
+import messageRouter from "./routes/message.routes.js";
 
 import AppError from "./utils/appError.js";
 import globalErrorHandler from "./controllers/error.controller.js";
@@ -59,7 +61,9 @@ app
   .use("/api/admin", packagesRouter)
   .use("/api/trainer/workoutPlans", workoutPlanRouter)
   .use("/api/trainer-packages", trainerPackageRouter)
-  .use("/api/trainer-requests", trainerRequestRouter);
+  .use("/api/trainer-requests", trainerRequestRouter)
+  .use("/api/chat", chatRouter)
+  .use("/api/message", messageRouter);
 
 // Create 404 error
 app.all("*", (req, res, next) =>
