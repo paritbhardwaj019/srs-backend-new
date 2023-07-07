@@ -38,11 +38,12 @@ export const userChats = catchAsync(async (req, res) => {
         chat,
       },
     });
-  } catch (error) {}
-  res.status(400).json({
-    status: "fail",
-    message: error.message,
-  });
+  } catch (error) {
+    res.status(400).json({
+      status: "fail",
+      message: error.message,
+    });
+  }
 });
 
 export const findChat = catchAsync(async (req, res) => {

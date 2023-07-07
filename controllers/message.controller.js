@@ -32,7 +32,7 @@ export const getMessages = catchAsync(async (req, res) => {
       chatId,
     });
 
-    res.status(201).json({
+    res.status(200).json({
       status: "success",
       data: {
         chat,
