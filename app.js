@@ -8,6 +8,7 @@ import xss from "xss-clean";
 import compression from "compression";
 import http from "http";
 import { Server } from "socket.io";
+import fileUpload from "express-fileupload";
 
 import userRouter from "./routes/user.routes.js";
 import packagesRouter from "./routes/packages.routes.js";
@@ -16,6 +17,7 @@ import trainerPackageRouter from "./routes/trainerPackage.route.js";
 import trainerRequestRouter from "./routes/trainerRequest.routes.js";
 import chatRouter from "./routes/chat.routes.js";
 import messageRouter from "./routes/message.routes.js";
+import videosRouter from "./routes/video.routes.js";
 
 import AppError from "./utils/appError.js";
 import globalErrorHandler from "./controllers/error.controller.js";
@@ -55,6 +57,9 @@ app.use(compression());
 // Middleware to parse JSON data
 app.use(bodyParser.json());
 
+// Middleware for Video and Image File Upload
+app.use(fileUpload());
+
 // Define routes
 app
   .use("/api/users", userRouter)
@@ -63,7 +68,8 @@ app
   .use("/api/trainer-packages", trainerPackageRouter)
   .use("/api/trainer-requests", trainerRequestRouter)
   .use("/api/chat", chatRouter)
-  .use("/api/message", messageRouter);
+  .use("/api/message", messageRouter)
+  .use("/api/videos", videosRouter);
 
 // Create 404 error
 app.all("*", (req, res, next) =>
