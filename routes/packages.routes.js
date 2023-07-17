@@ -18,5 +18,7 @@ router
   .patch(packagesController.updatePackage)
   .delete(packagesController.deletePackage);
 
+router.put("/package/buy", packagesController.buyPackage);
+
 // Export the router
 export default router;

@@ -63,6 +63,12 @@ const schema = new mongoose.Schema(
       type: Date,
       default: Date.now,
     },
+    package: [
+      {
+        type: mongoose.Types.ObjectId,
+        ref: "Package",
+      },
+    ],
   },
   {
     toJSON: { virtuals: true },
