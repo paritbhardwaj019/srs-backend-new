@@ -16,6 +16,7 @@ const exerciseSchema = new mongoose.Schema({
     type: mongoose.Types.ObjectId,
     ref: "Package",
   },
+  description: String,
 });
 
 const workoutPlanSchema = new mongoose.Schema(
