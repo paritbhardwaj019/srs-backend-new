@@ -19,6 +19,7 @@ router
   .delete(packagesController.deletePackage);
 
 router.put("/package/buy", packagesController.buyPackage);
+router.post("/packages/assign", packagesController.assignPackage);
 
 // Export the router
 export default router;

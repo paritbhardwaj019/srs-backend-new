@@ -12,10 +12,7 @@ export const deletePackage = handlerFactory.deleteOne(Package);
 // Create a new package
 export const createPackage = catchAsync(async (req, res) => {
   try {
-    const newPackage = await Package.create({
-      ...req.body,
-      trainer: req.user.id,
-    });
+    const newPackage = await Package.create(req.body);
 
     res.status(201).json({
       status: "success",
@@ -49,6 +46,38 @@ export const buyPackage = catchAsync(async (req, res) => {
       status: "success",
       data: {
         user: findUser,
+      },
+    });
+  } catch (error) {
+    res.status(400).json({
+      status: "fail",
+      message: error.message,
+    });
+  }
+});
+
+export const assignPackage = catchAsync(async (req, res, next) => {
+  const { trainerId, packageId } = req.body;
+  try {
+    const newPackage = await Package.findById(packageId);
+
+    const isAlreadyAssigned = !!newPackage.trainer;
+
+    if (isAlreadyAssigned) {
+      return res.status(400).json({
+        status: "fail",
+        message: "Already Assigned Trainer to Package",
+      });
+    }
+
+    newPackage.trainer = trainerId;
+
+    await newPackage.save();
+
+    res.status(200).json({
+      status: "success",
+      data: {
+        trainerPackage: newPackage,
       },
     });
   } catch (error) {
