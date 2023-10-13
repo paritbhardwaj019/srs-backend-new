@@ -8,7 +8,7 @@ import WorkoutPlan from "../models/workout_plan.model.js";
 
 export const getAllUsers = catchAsync(async (req, res, next) => {
   try {
-    const users = await User.find().populate("package");
+    const users = await User.find().populate("packages");
 
     res.status(200).json({
       status: "success",
@@ -17,7 +17,7 @@ export const getAllUsers = catchAsync(async (req, res, next) => {
       },
     });
   } catch (error) {
-    console.log(err);
+    console.log(error);
 
     next(new AppError("Unable to Get All users"));
   }

@@ -13,7 +13,7 @@ router.use(authController.protect);
 router.route("/:id").get(trainerPackageController.getTrainerPackage);
 
 // Admin and trainer only routes
-router.use(authController.restrictTo("admin"));
+router.use(authController.restrictTo("admin", "trainer"));
 router
   .route("/")
   .get(trainerPackageController.getAllTrainerPackages)
@@ -23,6 +23,8 @@ router
   .patch(trainerPackageController.updateTrainerPackage)
   .delete(trainerPackageController.deleteTrainerPackage);
 // router.post("/assign", trainerPackageController.assignPackage);
+
+router.get("/all/users", trainerPackageController.getAllTraineeByTrainer);
 
 // Add any additional routes for admin and trainer users here
 

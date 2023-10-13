@@ -21,5 +21,7 @@ router
 router.put("/package/buy", packagesController.buyPackage);
 router.post("/packages/assign", packagesController.assignPackage);
 
+router.get("/packages/user/all", packagesController.getAllPackagesByUser);
+
 // Export the router
 export default router;

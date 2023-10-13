@@ -34,10 +34,10 @@ export const buyPackage = catchAsync(async (req, res) => {
   try {
     let findUser = await User.findById(id);
 
-    if (!findUser.package.includes(packageId)) {
-      const findUser = await User.findByIdAndUpdate(id, {
+    if (!findUser.packages.includes(packageId)) {
+      findUser = await User.findByIdAndUpdate(id, {
         $push: {
-          package: packageId,
+          packages: packageId,
         },
       });
     }
@@ -71,7 +71,6 @@ export const assignPackage = catchAsync(async (req, res, next) => {
     }
 
     newPackage.trainer = trainerId;
-
     await newPackage.save();
 
     res.status(200).json({
@@ -86,4 +85,21 @@ export const assignPackage = catchAsync(async (req, res, next) => {
       message: error.message,
     });
   }
+});
+
+export const getAllPackagesByUser = catchAsync(async (req, res, next) => {
+  const { id } = req.user;
+  const targettedPackages = await Package.find({ trainer: id });
+
+  if (!targettedPackages) {
+    return res.status(404).json({
+      status: "fail",
+      message: "Packages not found with this user id",
+    });
+  }
+
+  res.status(200).json({
+    status: "sucsess",
+    data: targettedPackages,
+  });
 });

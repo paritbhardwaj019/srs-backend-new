@@ -63,7 +63,11 @@ export const signUp = catchAsync(async (req, res, next) => {
   if (req.body.role === "admin") {
     delete req.body.role;
   }
-  const user = await User.create(req.body);
+
+  const packages =
+    req.body.packages && req.body.packages.length > 0 ? req.body.packages : [];
+
+  const user = await User.create({ ...req.body, packages });
   signAndSendToken(user, 201, res);
 });
 
